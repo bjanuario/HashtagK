@@ -11,3 +11,7 @@ NLTK Toolkit, link here: https://www.nltk.org/install.html
 ## How to run:
 
 Run `python3 HashtagK.py`
+
+## Sample data
+
+You can download here de docs directory files and put them in the same dir where you will run the application
