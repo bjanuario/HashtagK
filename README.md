@@ -22,7 +22,7 @@ Open the html file created inside the program directory
 
 You can download here de docs directory files and put them in the same dir where you will run the application
 
-## What keywords are been stored
+## What word tags are avaiable:
 
 As I am using NLTK I rely ony on Noums, singular or mass to be more precise on usefull hotwords but the list of possibilities are these:
 
