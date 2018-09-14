@@ -7,6 +7,7 @@ nltk.download('averaged_perceptron_tagger')
 class Hashtag(object):
     """
     Hashtag Class
+    
     """
 
     @staticmethod
@@ -19,27 +20,25 @@ class Hashtag(object):
         :return:
         """
 
-        txt_files = []
+        txt_files = [file for file in files["documents"]]
         txt_sentences = []
         final_line = ""
-        for file in files["documents"]:
-            txt_files.append(file)
+
         for txt_file in txt_files:
-            file = open(txt_file, "r")
-            for line in file:
-                if word in line or word.title() in line:
-                    format_text = "<br/><p>".join(line.split("\n"))
-                    split_to_highlight = format_text.split(" ")
-                    for split_word in split_to_highlight:
-                        clean_word = split_word.replace(".", "").replace(",", "").replace("!", "").replace("?", "").\
-                            replace("'s", "")
-                        if clean_word == word or clean_word == word.title():
-                            final_line += "<b>" + " " + word + "</b>"
-                        else:
-                            final_line += " " + split_word
-                    txt_sentences.append(final_line)
-                    final_line = ""
-            file.close()
+            with open(txt_file, "r") as file:
+                for line in file:
+                    if word in line or word.title() in line:
+                        format_text = "<br/><p>".join(line.split("\n"))
+                        split_to_highlight = format_text.split(" ")
+                        for split_word in split_to_highlight:
+                            clean_word = split_word.replace(".", "").replace(",", "").replace("!", "").replace("?", "").\
+                                replace("'s", "")
+                            if clean_word == word or clean_word == word.title():
+                                final_line += "<b>" + " " + word + "</b>"
+                            else:
+                                final_line += " " + split_word
+                        txt_sentences.append(final_line)
+                        final_line = ""
         return txt_sentences
 
     def generate_html_document(self, values, max_records_to_show):
@@ -104,38 +103,34 @@ class Hashtag(object):
         :return:
         """
         words = {}
-        txt_files = []
-        word_to_exclude = ["i", ""]
+        txt_files = [file for file in glob.glob("docs/*.txt")]
+        word_to_exclude = ["i", "", "I"]
         max_records_to_show = 10
 
-        for file in glob.glob("docs/*.txt"):
-            txt_files.append(file)
         for txt_file in txt_files:
-            file = open(txt_file, "r")
-            for line in file:
-                tokens = nltk.word_tokenize(line.lower())
-                tagged = nltk.pos_tag(tokens)
-                for word, word_type in tagged:
-                    if word_type == "NN" and word_type not in word_to_exclude:
-                        w = word
-                        if w in words:
-                            words[w]["counter"] += 1
-                        else:
-                            words[w] = {
-                                "counter": 1
-                            }
-                        if "documents" not in words[w]:
-                            words[w]["documents"] = [txt_file]
-                        else:
-                            if txt_file not in words[w]["documents"]:
-                                words[w]["documents"].append(txt_file)
-            file.close()
+            with open(txt_file, "r") as file:
+                for line in file:
+                    tokens = nltk.word_tokenize(line.lower())
+                    tagged = nltk.pos_tag(tokens)
+                    for word, word_type in tagged:
+                        if word_type == "NN" and word not in word_to_exclude:
+                            w = word
+                            if w in words:
+                                words[w]["counter"] += 1
+                            else:
+                                words[w] = {
+                                    "counter": 1
+                                }
+                            if "documents" not in words[w]:
+                                words[w]["documents"] = [txt_file]
+                            else:
+                                if txt_file not in words[w]["documents"]:
+                                    words[w]["documents"].append(txt_file)
         sorted_dict_results = {}
         for a in sorted(words.keys(), key=lambda y: words[y]['counter'], reverse=True):
             sorted_dict_results[a] = words[a]
 
         self.generate_html_document(sorted_dict_results, max_records_to_show)
-        print(sorted_dict_results)
 
 
 if __name__ == "__main__":
